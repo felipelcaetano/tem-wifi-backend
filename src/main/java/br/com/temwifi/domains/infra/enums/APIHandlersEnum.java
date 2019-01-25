@@ -1,17 +1,16 @@
 package br.com.temwifi.domains.infra.enums;
 
+import br.com.temwifi.domains.auth.controller.PostLogin;
+import br.com.temwifi.domains.auth.controller.PostUser;
+import br.com.temwifi.domains.infra.controller.PostWarmUp;
+
 import java.util.Arrays;
 
 public enum APIHandlersEnum {
 
-    WARMUP_POST("/warmup", "POST", PostWarmUp.class),
-    LOGIN_POST("/login", "POST", PostLogin.class),
-    URL_PREASSINADA_POST("/urlpreassinada", "POST", PostUrlPreassinada.class),
-    RECONHECIMENTO_IMAGEM_POST("/reconhecimentoimagem", "POST", PostReconhecimentoImagem.class),
-    EXTRATOS_GET("/extrato", "GET", GetExtratos.class),
-    EXTRATO_GET("/extrato/{extratoId}", "GET", GetExtrato.class),
-    EXTRATO_POST("/extrato", "POST", PostExtrato.class),
-    RELATORIO_CONSOLIDADO_GET("/relatorio/consolidado", "GET", GetRelatorioConsolidado.class);
+    WARMUP_POST("/infra/warmup", "POST", PostWarmUp.class),
+    USER_POST("/auth/user", "POST", PostUser.class),
+    LOGIN_POST("/auth/login", "POST", PostLogin.class);
 
     private String resource;
     private String httpMethod;

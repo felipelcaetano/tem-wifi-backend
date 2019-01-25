@@ -16,7 +16,7 @@ public class PasswordUtils {
     private static final int ITERATIONS = 10000;
     private static final int KEY_LENGTH = 256;
 
-    private static String getSalt() {
+    public static String getSalt() {
         Integer saltLength = 30;
         StringBuilder returnValue = new StringBuilder(saltLength);
         for (int i = 0; i < saltLength; i++) {

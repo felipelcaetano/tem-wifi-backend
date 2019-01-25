@@ -1,6 +1,6 @@
 package br.com.temwifi.domains.infra.utils.factory;
 
-import main.br.com.reklotericas.exception.InternalServerErrorException;
+import br.com.temwifi.domains.infra.utils.exception.InternalServerErrorException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

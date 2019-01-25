@@ -1,11 +1,12 @@
-package br.com.temwifi.domains.infra.utils.controller;
+package br.com.temwifi.domains.infra.controller;
 
 import br.com.temwifi.annotations.Controller;
+import br.com.temwifi.domains.auth.service.ValidateTokenService;
 import br.com.temwifi.domains.infra.enums.APIHandlersEnum;
 import br.com.temwifi.domains.infra.enums.InjectablesEnum;
 import br.com.temwifi.domains.infra.model.request.AwsApiRequest;
 import br.com.temwifi.domains.infra.model.request.AwsHttpContext;
-import br.com.temwifi.domains.infra.model.response.AbstractResponse;
+import br.com.temwifi.domains.infra.model.response.RestAbstractResponse;
 import br.com.temwifi.domains.infra.model.response.AwsApiResponse;
 import br.com.temwifi.domains.infra.model.response.error.ErrorResponse;
 import br.com.temwifi.domains.infra.utils.builder.AwsHttpContextBuilder;
@@ -28,13 +29,14 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.util.Map;
 
-public class APIRequestHandler implements RequestHandler<AwsApiRequest, AwsApiResponse> {
+public class AwsApiRequestHandler implements RequestHandler<AwsApiRequest, AwsApiResponse> {
 
-    private static Logger LOGGER = LogManager.getLogger(APIRequestHandler.class);
+    private static Logger LOGGER = LogManager.getLogger(AwsApiRequestHandler.class);
     private static final String HANDLE_REQUEST = "handleRequest";
     private static final String AUTHORIZATION = "Authorization";
 
-    ObjectMapper objectMapper;
+    private ObjectMapper objectMapper;
+    private ValidateTokenService validateTokenService;
 
     @Override
     public AwsApiResponse handleRequest(AwsApiRequest apiRequest, Context context) {
@@ -55,7 +57,7 @@ public class APIRequestHandler implements RequestHandler<AwsApiRequest, AwsApiRe
         }
 
         try {
-            validaAutenticacao(apiRequest.getHeaders(), apiResourcesEnum.getClazz());
+            validateAuth(apiRequest.getHeaders(), apiResourcesEnum.getClazz());
         } catch (UnauthorizedExcpetion e) {
             return getAPIResponseError(HttpStatus.SC_UNAUTHORIZED, e.getMessage());
         }
@@ -117,7 +119,7 @@ public class APIRequestHandler implements RequestHandler<AwsApiRequest, AwsApiRe
         AwsApiResponse apiResponse = new AwsApiResponse();
 
         try {
-            AbstractResponse response = (AbstractResponse) handleRequest.invoke(controller, input, httpContext);
+            RestAbstractResponse response = (RestAbstractResponse) handleRequest.invoke(controller, input, httpContext);
             apiResponse.setBody(response);
             apiResponse.setStatusCode(response.getStatusCode());
             return apiResponse;
@@ -185,7 +187,7 @@ public class APIRequestHandler implements RequestHandler<AwsApiRequest, AwsApiRe
         }
     }
 
-    private void validaAutenticacao(Map<String, String> headers, Class<?> clazz) throws UnauthorizedExcpetion {
+    private void validateAuth(Map<String, String> headers, Class<?> clazz) throws UnauthorizedExcpetion {
 
         Boolean auth = clazz.getAnnotation(Controller.class).auth();
 
@@ -195,7 +197,14 @@ public class APIRequestHandler implements RequestHandler<AwsApiRequest, AwsApiRe
                 throw new UnauthorizedExcpetion();
             }
 
-            AuthService.validaToken(headers.get(AUTHORIZATION));
+            validateTokenService = new ValidateTokenService();
+
+            try {
+                validateTokenService.execute(headers.get(AUTHORIZATION));
+            } catch (Exception e) {
+                LOGGER.error("Erro ao validar token", e);
+                throw new UnauthorizedExcpetion();
+            }
         }
     }
 }

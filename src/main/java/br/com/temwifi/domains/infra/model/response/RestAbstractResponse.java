@@ -6,13 +6,13 @@ import org.apache.http.HttpStatus;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class AbstractResponse {
+public abstract class RestAbstractResponse {
 
     @JsonIgnore
     protected Integer statusCode;
     protected List<Hypermedia> links;
 
-    protected AbstractResponse() {
+    protected RestAbstractResponse() {
         this.statusCode = HttpStatus.SC_OK;
         this.links = new ArrayList<>();
     }

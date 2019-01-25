@@ -1,4 +1,4 @@
-package br.com.temwifi.utils.formato;
+package br.com.temwifi.utils.format;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;

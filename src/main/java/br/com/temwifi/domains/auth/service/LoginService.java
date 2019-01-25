@@ -1,0 +1,73 @@
+package br.com.temwifi.domains.auth.service;
+
+import br.com.temwifi.domains.auth.entity.interfaces.UserEntity;
+import br.com.temwifi.domains.auth.model.User;
+import br.com.temwifi.domains.auth.model.request.PostLoginRequest;
+import br.com.temwifi.domains.auth.model.response.PostLoginResponse;
+import br.com.temwifi.domains.infra.utils.exception.BadRequestException;
+import br.com.temwifi.domains.infra.utils.exception.HttpException;
+import br.com.temwifi.domains.infra.utils.exception.InternalServerErrorException;
+import br.com.temwifi.domains.infra.utils.exception.ResourceNotFoundException;
+import br.com.temwifi.interfaces.Service;
+import br.com.temwifi.utils.auth.PasswordUtils;
+import br.com.temwifi.utils.auth.TokenUtils;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTCreationException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.sql.Date;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Optional;
+
+public class LoginService implements Service<PostLoginRequest, PostLoginResponse> {
+
+    private static final Logger LOGGER = LogManager.getLogger(LoginService.class);
+
+    private UserEntity userEntity;
+
+    public LoginService() {
+
+    }
+
+    public LoginService(UserEntity userEntity) {
+        this.userEntity = userEntity;
+    }
+
+    @Override
+    public PostLoginResponse execute(PostLoginRequest request) throws HttpException {
+
+        Optional<User> user = userEntity.readUserByEmail(request.getUser());
+
+        if(!user.isPresent()) {
+            LOGGER.error(String.format("Usuário [%s] não encontrada", request.getUser()));
+            throw new ResourceNotFoundException(String.format("Usuário [%s] não encontrado", request.getUser()));
+        }
+
+        if(!PasswordUtils.verifyUserPassword(request.getPass(), user.get().getPass(), user.get().getSalt())) {
+            LOGGER.error("Usuário ou senha inválidos");
+            throw new BadRequestException("Usuário ou senha inválidos");
+        }
+
+        String token;
+        try {
+            Algorithm algorithm = Algorithm.HMAC512(TokenUtils.getSecret());
+            token = JWT.create()
+                    .withIssuer("temwifi")
+                    .withClaim("id", user.get().getId())
+                    .withExpiresAt(Date.from(Instant.now().plus(1, ChronoUnit.DAYS)))
+                    .withIssuedAt(Date.from(Instant.now()))
+                    .sign(algorithm);
+        } catch (JWTCreationException e){
+            LOGGER.error("Erro ao gerar token", e);
+            throw new InternalServerErrorException();
+        }
+
+        PostLoginResponse postLoginResponse = new PostLoginResponse();
+        postLoginResponse.setToken(token);
+        postLoginResponse.setUserId(user.get().getId());
+        return postLoginResponse;
+    }
+}
