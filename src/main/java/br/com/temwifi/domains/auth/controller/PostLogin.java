@@ -1,6 +1,7 @@
 package br.com.temwifi.domains.auth.controller;
 
 import br.com.temwifi.annotations.Controller;
+import br.com.temwifi.domains.auth.component.DaggerAuthComponent;
 import br.com.temwifi.domains.auth.entity.impl.DynamoDBUserEntity;
 import br.com.temwifi.domains.auth.model.request.PostLoginRequest;
 import br.com.temwifi.domains.auth.model.response.PostLoginResponse;
@@ -22,6 +23,18 @@ public class PostLogin implements AwsApiRestHandler<PostLoginRequest, PostLoginR
 
     private LoginService service;
 
+    public PostLogin() {
+        service = DaggerAuthComponent.create().buildLoginService();
+    }
+
+    /**
+     * Validate email and pass and generate a token if valid
+     *
+     * @param body
+     * @param httpContext
+     * @return              user's data + a token
+     * @throws HttpException
+     */
     @Override
     public PostLoginResponse handleRequest(PostLoginRequest body, AwsHttpContext httpContext) throws HttpException {
 

@@ -60,8 +60,4 @@ public class MySQLConnFactory {
             throw new InternalServerErrorException("Erro iterno");
         }
     }
-
-    public static void main(String[] args) throws InternalServerErrorException {
-        MySQLConnFactory.getConn("dev");
-    }
 }

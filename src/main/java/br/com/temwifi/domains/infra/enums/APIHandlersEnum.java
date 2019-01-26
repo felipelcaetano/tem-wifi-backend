@@ -22,6 +22,13 @@ public enum APIHandlersEnum {
         this.clazz = clazz;
     }
 
+    /**
+     * Try to find the controller responsible for handling a request based on resource path and http method
+     *
+     * @param resource
+     * @param httpMethod
+     * @return              controller class name
+     */
     public static APIHandlersEnum getAPIResourcesEnum(String resource, String httpMethod) {
 
         return Arrays.asList(APIHandlersEnum.values())

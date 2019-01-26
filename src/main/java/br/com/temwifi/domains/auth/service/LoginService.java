@@ -1,7 +1,7 @@
 package br.com.temwifi.domains.auth.service;
 
 import br.com.temwifi.domains.auth.entity.interfaces.UserEntity;
-import br.com.temwifi.domains.auth.model.User;
+import br.com.temwifi.domains.auth.model.dto.UserDTO;
 import br.com.temwifi.domains.auth.model.request.PostLoginRequest;
 import br.com.temwifi.domains.auth.model.response.PostLoginResponse;
 import br.com.temwifi.domains.infra.utils.exception.BadRequestException;
@@ -9,6 +9,7 @@ import br.com.temwifi.domains.infra.utils.exception.HttpException;
 import br.com.temwifi.domains.infra.utils.exception.InternalServerErrorException;
 import br.com.temwifi.domains.infra.utils.exception.ResourceNotFoundException;
 import br.com.temwifi.interfaces.Service;
+import br.com.temwifi.utils.MapperUtils;
 import br.com.temwifi.utils.auth.PasswordUtils;
 import br.com.temwifi.utils.auth.TokenUtils;
 import com.auth0.jwt.JWT;
@@ -17,6 +18,7 @@ import com.auth0.jwt.exceptions.JWTCreationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.inject.Inject;
 import java.sql.Date;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -28,18 +30,25 @@ public class LoginService implements Service<PostLoginRequest, PostLoginResponse
 
     private UserEntity userEntity;
 
-    public LoginService() {
-
-    }
-
+    @Inject
     public LoginService(UserEntity userEntity) {
         this.userEntity = userEntity;
     }
 
+    /**
+     * Validate email and pass and generate a token if valid
+     *
+     * @param request
+     * @return                  user's data + a token
+     * @throws HttpException
+     */
     @Override
     public PostLoginResponse execute(PostLoginRequest request) throws HttpException {
 
-        Optional<User> user = userEntity.readUserByEmail(request.getUser());
+        LOGGER.info(String.format("%s executing", this.getClass().getSimpleName()));
+        LOGGER.info(String.format("Request: %s", MapperUtils.toJson(request)));
+
+        Optional<UserDTO> user = userEntity.readUserByEmail(request.getUser());
 
         if(!user.isPresent()) {
             LOGGER.error(String.format("Usuário [%s] não encontrada", request.getUser()));
@@ -67,7 +76,7 @@ public class LoginService implements Service<PostLoginRequest, PostLoginResponse
 
         PostLoginResponse postLoginResponse = new PostLoginResponse();
         postLoginResponse.setToken(token);
-        postLoginResponse.setUserId(user.get().getId());
+        postLoginResponse.setId(user.get().getId());
         return postLoginResponse;
     }
 }

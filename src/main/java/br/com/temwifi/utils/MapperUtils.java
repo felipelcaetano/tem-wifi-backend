@@ -6,6 +6,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class MapperUtils {
 
+    /**
+     * Transfor an object into a json string
+     *
+     * @param object
+     * @return          json string
+     */
     public static String toJson(Object object) {
 
         try {

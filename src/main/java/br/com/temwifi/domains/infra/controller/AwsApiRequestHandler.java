@@ -1,9 +1,9 @@
 package br.com.temwifi.domains.infra.controller;
 
 import br.com.temwifi.annotations.Controller;
+import br.com.temwifi.domains.auth.component.DaggerAuthComponent;
 import br.com.temwifi.domains.auth.service.ValidateTokenService;
 import br.com.temwifi.domains.infra.enums.APIHandlersEnum;
-import br.com.temwifi.domains.infra.enums.InjectablesEnum;
 import br.com.temwifi.domains.infra.model.request.AwsApiRequest;
 import br.com.temwifi.domains.infra.model.request.AwsHttpContext;
 import br.com.temwifi.domains.infra.model.response.RestAbstractResponse;
@@ -14,7 +14,6 @@ import br.com.temwifi.domains.infra.utils.exception.BadRequestException;
 import br.com.temwifi.domains.infra.utils.exception.InternalServerErrorException;
 import br.com.temwifi.domains.infra.utils.exception.ResourceNotFoundException;
 import br.com.temwifi.domains.infra.utils.exception.UnauthorizedExcpetion;
-import br.com.temwifi.utils.InstanceUtils;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.util.StringUtils;
@@ -38,6 +37,18 @@ public class AwsApiRequestHandler implements RequestHandler<AwsApiRequest, AwsAp
     private ObjectMapper objectMapper;
     private ValidateTokenService validateTokenService;
 
+    public AwsApiRequestHandler() {
+        validateTokenService = DaggerAuthComponent.create().buildValidateTokenService();
+    }
+
+    /**
+     * Handle all requests originated from ApiGateway
+     * Find the controller responsible for handling the request and execute it
+     *
+     * @param apiRequest
+     * @param context
+     * @return              generic response with a specific body from the controller
+     */
     @Override
     public AwsApiResponse handleRequest(AwsApiRequest apiRequest, Context context) {
 
@@ -74,20 +85,18 @@ public class AwsApiRequestHandler implements RequestHandler<AwsApiRequest, AwsAp
             return getAPIResponseError(HttpStatus.SC_INTERNAL_SERVER_ERROR, "Erro inesperado");
         }
 
-        try {
-            InstanceUtils.instatiateIjectables(controller, InjectablesEnum.CONTROLLER);
-        } catch (IllegalAccessException | InstantiationException e) {
-            LOGGER.error(String.format("Erro ao gerar intancias dos injectables %s", controller.getClass().getName()));
-            LOGGER.error(e);
-            return getAPIResponseError(HttpStatus.SC_INTERNAL_SERVER_ERROR, "Erro inesperado");
-        }
-
         AwsApiResponse apiResponse = invokeMethod(handleRequest, controller, requestBody, httpContext);
 
         LOGGER.info(String.format("Response: %s", apiResponse.toString()));
         return apiResponse;
     }
 
+    /**
+     * Instantiate a new controller object
+     *
+     * @param apiHandlersEnum
+     * @return                  controller instance
+     */
     private Object getClassInstance(APIHandlersEnum apiHandlersEnum) {
 
         try {
@@ -99,6 +108,13 @@ public class AwsApiRequestHandler implements RequestHandler<AwsApiRequest, AwsAp
         }
     }
 
+    /**
+     * Find the handleRequest method in the controller class
+     *
+     * @param apiHandlersEnum
+     * @return                  handleRequest Method
+     * @throws InternalServerErrorException
+     */
     private Method getHandleRequest(APIHandlersEnum apiHandlersEnum) throws InternalServerErrorException {
 
         Class clazz = apiHandlersEnum.getClazz();
@@ -110,10 +126,19 @@ public class AwsApiRequestHandler implements RequestHandler<AwsApiRequest, AwsAp
         } catch (NoSuchMethodException e) {
             LOGGER.error(e);
             throw new InternalServerErrorException(
-                    String.format("Metodo handleRequest nao implementado na classe [%s]", clazz.getSimpleName()));
+                    String.format("Método handleRequest nao implementado na classe [%s]", clazz.getSimpleName()));
         }
     }
 
+    /**
+     * Execute controller's handleRequest method
+     *
+     * @param handleRequest     method
+     * @param controller
+     * @param input             request body
+     * @param httpContext       http data
+     * @return                  default response with specific body
+     */
     private AwsApiResponse invokeMethod(Method handleRequest, Object controller, Object input, AwsHttpContext httpContext) {
 
         AwsApiResponse apiResponse = new AwsApiResponse();
@@ -157,6 +182,13 @@ public class AwsApiRequestHandler implements RequestHandler<AwsApiRequest, AwsAp
         }
     }
 
+    /**
+     * Generate a default response with error in it
+     *
+     * @param statusCode
+     * @param message
+     * @return              new instance of AwsApiResponse with detailed error
+     */
     private AwsApiResponse getAPIResponseError(Integer statusCode, String message) {
 
         AwsApiResponse apiResponse = new AwsApiResponse();
@@ -165,6 +197,11 @@ public class AwsApiRequestHandler implements RequestHandler<AwsApiRequest, AwsAp
         return apiResponse;
     }
 
+    /**
+     * Instatiate new ObjectMapper
+     *
+     * @return      new ObjectMapper instance
+     */
     private ObjectMapper getObjectMapper() {
         if(objectMapper == null) {
             objectMapper = new ObjectMapper();
@@ -173,6 +210,14 @@ public class AwsApiRequestHandler implements RequestHandler<AwsApiRequest, AwsAp
         return objectMapper;
     }
 
+    /**
+     * Transform request body into a controller input class
+     *
+     * @param clazz
+     * @param body
+     * @return          new isntance of controller input class
+     * @throws InternalServerErrorException
+     */
     private Object deserializeRequest(Class clazz, String body) throws InternalServerErrorException {
         if(StringUtils.isNullOrEmpty(body)) {
             return null;
@@ -187,6 +232,13 @@ public class AwsApiRequestHandler implements RequestHandler<AwsApiRequest, AwsAp
         }
     }
 
+    /**
+     * Check request Authorization header when based on Controller annotation in Controller class
+     *
+     * @param headers
+     * @param clazz
+     * @throws UnauthorizedExcpetion
+     */
     private void validateAuth(Map<String, String> headers, Class<?> clazz) throws UnauthorizedExcpetion {
 
         Boolean auth = clazz.getAnnotation(Controller.class).auth();
@@ -196,8 +248,6 @@ public class AwsApiRequestHandler implements RequestHandler<AwsApiRequest, AwsAp
                 LOGGER.error("Token não informado");
                 throw new UnauthorizedExcpetion();
             }
-
-            validateTokenService = new ValidateTokenService();
 
             try {
                 validateTokenService.execute(headers.get(AUTHORIZATION));

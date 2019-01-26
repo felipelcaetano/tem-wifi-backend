@@ -8,6 +8,12 @@ import java.util.Map;
 
 public class AwsHttpContextBuilder {
 
+    /**
+     * Generate a AwsHttpContext based on AwsApiRequest containing all data from ApiGateway request
+     *
+     * @param request
+     * @return          a instance of AwsHttpContext
+     */
     public static AwsHttpContext build(AwsApiRequest request) {
 
         AwsHttpContext httpContext = new AwsHttpContext();

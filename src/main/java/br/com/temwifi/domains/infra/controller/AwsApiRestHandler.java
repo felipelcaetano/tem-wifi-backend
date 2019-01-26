@@ -5,5 +5,13 @@ import br.com.temwifi.domains.infra.utils.exception.HttpException;
 
 public interface AwsApiRestHandler<I, O> {
 
+    /**
+     * Main method of each Aws Controller Class
+     *
+     * @param body
+     * @param httpContext
+     * @return
+     * @throws HttpException
+     */
     O handleRequest(I body, AwsHttpContext httpContext) throws HttpException;
 }

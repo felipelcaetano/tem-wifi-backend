@@ -4,15 +4,24 @@ import br.com.temwifi.domains.infra.model.response.RestAbstractResponse;
 
 public class PostLoginResponse extends RestAbstractResponse {
 
-    private String userId;
+    private String id;
+    private String email;
     private String token;
 
-    public String getUserId() {
-        return userId;
+    public String getId() {
+        return id;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getToken() {
