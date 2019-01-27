@@ -101,8 +101,6 @@ public class GetRatings implements AwsApiRestHandler<Void, GetRatingsResponse> {
 
         getRatingsResponse.setRatings(returnRatings);
 
-        LOGGER.info(String.format("Retornado : \n%s", MapperUtils.toJson(getRatingsResponse)));
-
         return getRatingsResponse;
     }
 }

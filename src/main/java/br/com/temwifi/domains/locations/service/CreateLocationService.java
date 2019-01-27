@@ -32,8 +32,6 @@ public class CreateLocationService implements Service<PostLocationRequest, Locat
     @Override
     public LocationDTO execute(PostLocationRequest request) {
 
-
-
         LOGGER.info(String.format("%s executing", this.getClass().getSimpleName()));
         LOGGER.info(String.format("Request: %s", MapperUtils.toJson(request)));
 

@@ -2,6 +2,7 @@ package br.com.temwifi.domains.rating.service;
 
 import br.com.temwifi.domains.infra.utils.exception.BadRequestException;
 import br.com.temwifi.domains.infra.utils.exception.HttpException;
+import br.com.temwifi.domains.rating.entity.impl.DynamoDBRatingEntity;
 import br.com.temwifi.domains.rating.entity.interfaces.RatingEntity;
 import br.com.temwifi.domains.rating.model.dto.RatingDTO;
 import br.com.temwifi.domains.rating.model.request.GetRatingsRequest;

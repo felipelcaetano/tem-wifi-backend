@@ -8,6 +8,10 @@ public class GetRatingsResponse extends RestAbstractResponse {
 
     List<GetRatingResponse> ratings;
 
+    public List<GetRatingResponse> getRatings() {
+        return ratings;
+    }
+
     public void setRatings(List<GetRatingResponse> ratings) {
         this.ratings = ratings;
     }

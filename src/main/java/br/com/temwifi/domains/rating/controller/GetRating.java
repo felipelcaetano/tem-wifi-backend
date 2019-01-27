@@ -78,8 +78,6 @@ public class GetRating implements AwsApiRestHandler<Void, GetRatingResponse> {
             getRatingResponse.setInternet(getInrenetRatingResponse);
         }
 
-        LOGGER.info(String.format("Retornado : \n%s", MapperUtils.toJson(getRatingResponse)));
-
         return getRatingResponse;
     }
 }

@@ -1,48 +1,21 @@
-package br.com.temwifi.domains.locations.model.dto;
+package br.com.temwifi.domains.locations.model.response;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.*;
+import br.com.temwifi.domains.infra.model.response.RestAbstractResponse;
 
 import java.util.Set;
 
-@DynamoDBTable(tableName = "TemWiFiLocation")
-public class LocationDTO {
+public class GetLocationResponse extends RestAbstractResponse {
 
-    @DynamoDBHashKey
     private String id;
-
-    @DynamoDBIndexHashKey(globalSecondaryIndexName = "completeAddress-index")
-    private String completeAddress;
-
-    @DynamoDBAttribute
     private String street;
-
-    @DynamoDBAttribute
     private String number;
-
-    @DynamoDBAttribute
     private String complement;
-
-    @DynamoDBAttribute
     private String postCode;
-
-    @DynamoDBAttribute
     private String city;
-
-    @DynamoDBAttribute
     private String state;
-
-    @DynamoDBAttribute
     private String country;
-
-    @DynamoDBAttribute
-    @DynamoDBTyped(DynamoDBMapperFieldModel.DynamoDBAttributeType.L)
+    private Integer ratingsCount;
     private Set<String> ratings;
-
-    @DynamoDBAttribute
-    private String insertDateTime;
-
-    @DynamoDBAttribute
-    private String updateDateTime;
 
     public String getId() {
         return id;
@@ -50,14 +23,6 @@ public class LocationDTO {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public String getCompleteAddress() {
-        return completeAddress;
-    }
-
-    public void setCompleteAddress(String completeAddress) {
-        this.completeAddress = completeAddress;
     }
 
     public String getStreet() {
@@ -116,27 +81,19 @@ public class LocationDTO {
         this.country = country;
     }
 
+    public Integer getRatingsCount() {
+        return ratingsCount;
+    }
+
+    public void setRatingsCount(Integer ratingsCount) {
+        this.ratingsCount = ratingsCount;
+    }
+
     public Set<String> getRatings() {
         return ratings;
     }
 
     public void setRatings(Set<String> ratings) {
         this.ratings = ratings;
-    }
-
-    public String getInsertDateTime() {
-        return insertDateTime;
-    }
-
-    public void setInsertDateTime(String insertDateTime) {
-        this.insertDateTime = insertDateTime;
-    }
-
-    public String getUpdateDateTime() {
-        return updateDateTime;
-    }
-
-    public void setUpdateDateTime(String updateDateTime) {
-        this.updateDateTime = updateDateTime;
     }
 }

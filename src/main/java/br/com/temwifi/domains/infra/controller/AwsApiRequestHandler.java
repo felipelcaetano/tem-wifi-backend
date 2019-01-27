@@ -88,7 +88,7 @@ public class AwsApiRequestHandler implements RequestHandler<AwsApiRequest, AwsAp
 
         AwsApiResponse apiResponse = invokeMethod(handleRequest, controller, requestBody, httpContext);
 
-        LOGGER.info(String.format("Response: %s", apiResponse.toString()));
+        LOGGER.info(String.format("Response: \n%s", MapperUtils.toJson(apiResponse)));
         return apiResponse;
     }
 
