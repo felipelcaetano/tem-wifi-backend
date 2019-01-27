@@ -1,6 +1,7 @@
 package br.com.temwifi.interfaces;
 
-@FunctionalInterface
+import br.com.temwifi.domains.infra.utils.exception.HttpException;
+
 public interface Service<I, O> {
 
    /**
@@ -10,5 +11,5 @@ public interface Service<I, O> {
     * @return           service output
     * @throws Exception
     */
-   O execute(I request) throws Exception;
+   O execute(I request) throws HttpException;
 }

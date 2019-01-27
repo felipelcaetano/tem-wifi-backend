@@ -6,10 +6,12 @@ import br.com.temwifi.domains.auth.model.request.PostUserRequest;
 import br.com.temwifi.interfaces.Service;
 import br.com.temwifi.utils.MapperUtils;
 import br.com.temwifi.utils.auth.PasswordUtils;
+import br.com.temwifi.utils.date.LocalDateTimeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.inject.Inject;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class CreateUserService implements Service<PostUserRequest, UserDTO> {
@@ -23,6 +25,12 @@ public class CreateUserService implements Service<PostUserRequest, UserDTO> {
         this.userEntity = userEntity;
     }
 
+    /**
+     * Register a new user
+     *
+     * @param request    service input
+     * @return           user dto
+     */
     @Override
     public UserDTO execute(PostUserRequest request) {
 
@@ -35,10 +43,15 @@ public class CreateUserService implements Service<PostUserRequest, UserDTO> {
         String salt = PasswordUtils.getSalt();
         user.setPass(PasswordUtils.generateSecurePassword(request.getPass(), salt));
         user.setSalt(salt);
+        user.setInsertDateTime(LocalDateTimeUtils.now());
 
         userEntity.createUser(user);
 
         return user;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(LocalDateTime.now().toString());
     }
 
 }

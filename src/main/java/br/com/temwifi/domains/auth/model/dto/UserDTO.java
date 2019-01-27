@@ -20,6 +20,12 @@ public class UserDTO {
     @DynamoDBAttribute
     private String salt;
 
+    @DynamoDBAttribute
+    private String insertDateTime;
+
+    @DynamoDBAttribute
+    private String updateDateTime;
+
     public String getId() {
         return id;
     }
@@ -50,5 +56,21 @@ public class UserDTO {
 
     public void setSalt(String salt) {
         this.salt = salt;
+    }
+
+    public String getInsertDateTime() {
+        return insertDateTime;
+    }
+
+    public void setInsertDateTime(String insertDateTime) {
+        this.insertDateTime = insertDateTime;
+    }
+
+    public String getUpdateDateTime() {
+        return updateDateTime;
+    }
+
+    public void setUpdateDateTime(String updateDateTime) {
+        this.updateDateTime = updateDateTime;
     }
 }

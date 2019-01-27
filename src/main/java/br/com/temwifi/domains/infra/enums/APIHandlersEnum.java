@@ -3,14 +3,22 @@ package br.com.temwifi.domains.infra.enums;
 import br.com.temwifi.domains.auth.controller.PostLogin;
 import br.com.temwifi.domains.auth.controller.PostUser;
 import br.com.temwifi.domains.infra.controller.PostWarmUp;
+import br.com.temwifi.domains.locations.controller.PostLocation;
+import br.com.temwifi.domains.rating.controller.GetRating;
+import br.com.temwifi.domains.rating.controller.GetRatings;
+import br.com.temwifi.domains.rating.controller.PostRating;
 
 import java.util.Arrays;
 
 public enum APIHandlersEnum {
 
     WARMUP_POST("/infra/warmup", "POST", PostWarmUp.class),
+    LOGIN_POST("/auth/login", "POST", PostLogin.class),
     USER_POST("/auth/user", "POST", PostUser.class),
-    LOGIN_POST("/auth/login", "POST", PostLogin.class);
+    LOCATION_POST("/location", "POST", PostLocation.class),
+    RATING_GET("/rating", "GET", GetRatings.class),
+    RATING_GET_ID("/rating/{ratingId}", "GET", GetRating.class),
+    RATING_POST("/rating", "POST", PostRating.class);
 
     private String resource;
     private String httpMethod;

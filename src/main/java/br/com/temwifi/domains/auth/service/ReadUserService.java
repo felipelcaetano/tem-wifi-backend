@@ -11,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.inject.Inject;
+import java.util.Objects;
 import java.util.Optional;
 
 public class ReadUserService implements Service<GetUserRequest, UserDTO> {
@@ -25,17 +26,19 @@ public class ReadUserService implements Service<GetUserRequest, UserDTO> {
     }
 
     /**
-     * Get a user by it's email
+     * Get a user by it's id or email
      *
      * @param request
      * @return          the user's data
      * @throws ResourceNotFoundException
      */
     @Override
-    public UserDTO execute(GetUserRequest request) throws ResourceNotFoundException {
+    public UserDTO execute(GetUserRequest request) throws ResourceNotFoundException, BadRequestException {
 
         LOGGER.info(String.format("%s executing", this.getClass().getSimpleName()));
         LOGGER.info(String.format("Request: %s", MapperUtils.toJson(request)));
+
+        validate(request);
 
         Optional<UserDTO> user = userEntity.readUserByEmail(request.getEmail());
 
@@ -44,6 +47,20 @@ public class ReadUserService implements Service<GetUserRequest, UserDTO> {
         }
 
         return user.get();
+    }
+
+    private void validate(GetUserRequest request) throws BadRequestException {
+
+        LOGGER.info("Validando request");
+        if(Objects.isNull(request)) {
+            LOGGER.error("Request inválido");
+            throw new BadRequestException("Request inválido");
+        }
+
+        if(Objects.isNull(request.getId()) && Objects.isNull(request.getEmail())) {
+            LOGGER.error("Request inválido");
+            throw new BadRequestException("Request inválido. Informe um dos filtros");
+        }
     }
 
 }
