@@ -49,7 +49,7 @@ public class GetRatings implements AwsApiRestHandler<Void, GetRatingsResponse> {
         Map<String, String> queryStringParameters = httpContext.getQueryStringParameters();
 
         LOGGER.info("Obtendo query parameters");
-        if(queryStringParameters.isEmpty()) {
+        if(Objects.isNull(queryStringParameters) || queryStringParameters.isEmpty()) {
             LOGGER.error("Parâmetros não informados");
             throw new BadRequestException("Parâmetros não informados");
         }

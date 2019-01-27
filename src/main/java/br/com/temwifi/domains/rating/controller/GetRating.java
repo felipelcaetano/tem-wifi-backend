@@ -46,7 +46,7 @@ public class GetRating implements AwsApiRestHandler<Void, GetRatingResponse> {
 
         LOGGER.info("Obtendo path parameters");
 
-        if(pathParameters.isEmpty() || !pathParameters.containsKey(RATING_ID)) {
+        if(Objects.isNull(pathParameters) || pathParameters.isEmpty() || !pathParameters.containsKey(RATING_ID)) {
             LOGGER.error("Id da avaliação não informado");
             throw new BadRequestException("Id da avaliação não informado");
         }

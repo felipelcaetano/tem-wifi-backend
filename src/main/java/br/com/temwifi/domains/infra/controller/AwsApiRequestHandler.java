@@ -14,6 +14,7 @@ import br.com.temwifi.domains.infra.utils.exception.BadRequestException;
 import br.com.temwifi.domains.infra.utils.exception.InternalServerErrorException;
 import br.com.temwifi.domains.infra.utils.exception.ResourceNotFoundException;
 import br.com.temwifi.domains.infra.utils.exception.UnauthorizedExcpetion;
+import br.com.temwifi.utils.MapperUtils;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.util.StringUtils;
@@ -52,7 +53,7 @@ public class AwsApiRequestHandler implements RequestHandler<AwsApiRequest, AwsAp
     @Override
     public AwsApiResponse handleRequest(AwsApiRequest apiRequest, Context context) {
 
-        LOGGER.info(String.format("Request: %s", apiRequest.toString()));
+        LOGGER.info(String.format("Request: \n%s", MapperUtils.toJson(apiRequest)));
 
         String resource = apiRequest.getResource();
         String httpMethod = apiRequest.getHttpMethod();
