@@ -11,6 +11,7 @@ import java.util.Optional;
 public class DynamoDBLocationEntity extends DynamoDBAbstractEntity implements LocationEntity {
 
     private String completeAddressIndex = "completeAddress-index";
+    private String nameIndex = "name-index";
 
     @Override
     public void createLocation(LocationDTO location) {
@@ -30,6 +31,26 @@ public class DynamoDBLocationEntity extends DynamoDBAbstractEntity implements Lo
 
         DynamoDBQueryExpression<LocationDTO> expression = new DynamoDBQueryExpression<LocationDTO>()
                 .withIndexName(completeAddressIndex)
+                .withHashKeyValues(location)
+                .withConsistentRead(false);
+
+        List<LocationDTO> users = mapper.query(LocationDTO.class, expression);
+
+        if(users.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(users.get(0));
+    }
+
+    @Override
+    public Optional<LocationDTO> readLocationByName(String name) {
+
+        LocationDTO location = new LocationDTO();
+        location.setNameIndex(name);
+
+        DynamoDBQueryExpression<LocationDTO> expression = new DynamoDBQueryExpression<LocationDTO>()
+                .withIndexName(nameIndex)
                 .withHashKeyValues(location)
                 .withConsistentRead(false);
 

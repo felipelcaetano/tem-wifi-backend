@@ -28,4 +28,12 @@ public interface LocationEntity {
      * @return                  a location dto
      */
     Optional<LocationDTO> readLocationByCompleteAddress(String completeAddress);
+
+    /**
+     * Get a location by it's formatted name
+     *
+     * @param name
+     * @return                  a location dto
+     */
+    Optional<LocationDTO> readLocationByName(String name);
 }

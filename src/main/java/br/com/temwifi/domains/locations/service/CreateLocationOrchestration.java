@@ -71,6 +71,7 @@ public class CreateLocationOrchestration implements Service<PostLocationRequest,
 
         GetLocationRequest getLocationRequest = new GetLocationRequest();
         getLocationRequest.setCompleteAddress(completeAddress);
+        getLocationRequest.setName(request.getNameIndex());
 
         LOGGER.info(String.format("Pesquisando endereço: %s", completeAddress));
         try {

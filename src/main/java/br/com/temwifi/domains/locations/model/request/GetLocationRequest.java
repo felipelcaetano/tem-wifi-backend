@@ -7,6 +7,7 @@ public class GetLocationRequest {
 
     private String id;
     private String completeAddress;
+    private String name;
 
     public String getId() {
         return id;
@@ -22,5 +23,13 @@ public class GetLocationRequest {
 
     public void setCompleteAddress(String completeAddress) {
         this.completeAddress = completeAddress;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

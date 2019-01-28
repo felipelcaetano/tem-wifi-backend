@@ -40,18 +40,26 @@ public class ReadLocationService implements Service<GetLocationRequest, Location
         if(Objects.isNull(request))
             throw new BadRequestException("Request inválido");
 
-        if(Objects.isNull(request.getId()) && Objects.isNull(request.getCompleteAddress()))
+        if(Objects.isNull(request.getId()) && Objects.isNull(request.getCompleteAddress()) && Objects.isNull(request.getName()))
             throw new BadRequestException("Request inválido. Informe algum dos filtros");
 
-        Optional<LocationDTO> location;
+        Optional<LocationDTO> location = Optional.empty();
 
         if(!Objects.isNull(request.getId())) {
             LOGGER.info(String.format("Pesquisando local por id [%s]", request.getId()));
             location = locationEntity.readLocationById(request.getId());
 
         } else {
-            LOGGER.info(String.format("Pesquisando local por endereço [%s]", request.getCompleteAddress()));
-            location = locationEntity.readLocationByCompleteAddress(request.getCompleteAddress());
+
+            if(!Objects.isNull(request.getCompleteAddress())) {
+                LOGGER.info(String.format("Pesquisando local por endereço [%s]", request.getCompleteAddress()));
+                location = locationEntity.readLocationByCompleteAddress(request.getCompleteAddress());
+            }
+
+            if(!location.isPresent() && !Objects.isNull(request.getName())) {
+                LOGGER.info(String.format("Pesquisando local por nome [%s]", request.getName()));
+                location = locationEntity.readLocationByCompleteAddress(request.getCompleteAddress());
+            }
         }
 
         if(!location.isPresent()) {
