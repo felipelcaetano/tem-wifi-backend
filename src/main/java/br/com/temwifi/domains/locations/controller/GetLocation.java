@@ -51,6 +51,7 @@ public class GetLocation implements AwsApiRestHandler<Void, GetLocationResponse>
         LocationDTO location = readLocationService.execute(getLocationRequest);
 
         GetLocationResponse getLocationResponse = new GetLocationResponse();
+        getLocationResponse.setName(location.getName());
         getLocationResponse.setCity(location.getCity());
         getLocationResponse.setComplement(location.getComplement());
         getLocationResponse.setCountry(location.getCountry());

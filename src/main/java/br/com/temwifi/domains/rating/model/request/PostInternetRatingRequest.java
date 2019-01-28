@@ -23,11 +23,11 @@ public class PostInternetRatingRequest {
         this.speed = speed;
     }
 
-    public Boolean getOpened() {
+    public Boolean getIsOpened() {
         return isOpened;
     }
 
-    public void setOpened(Boolean opened) {
+    public void setIsOpened(Boolean opened) {
         isOpened = opened;
     }
 

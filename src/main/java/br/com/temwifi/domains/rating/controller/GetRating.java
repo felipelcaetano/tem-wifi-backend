@@ -11,7 +11,6 @@ import br.com.temwifi.domains.rating.model.request.GetRatingRequest;
 import br.com.temwifi.domains.rating.model.response.GetInrenetRatingResponse;
 import br.com.temwifi.domains.rating.model.response.GetRatingResponse;
 import br.com.temwifi.domains.rating.service.ReadRatingService;
-import br.com.temwifi.utils.MapperUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -71,7 +70,7 @@ public class GetRating implements AwsApiRestHandler<Void, GetRatingResponse> {
         if(!Objects.isNull(rating.getInternet())) {
             GetInrenetRatingResponse getInrenetRatingResponse = new GetInrenetRatingResponse();
             getInrenetRatingResponse.setHasInternet(rating.getInternet().getHasInternet());
-            getInrenetRatingResponse.setOpened(rating.getInternet().getOpened());
+            getInrenetRatingResponse.setIsOpened(rating.getInternet().getOpened());
             getInrenetRatingResponse.setPass(rating.getInternet().getPass());
             getInrenetRatingResponse.setSpeed(rating.getInternet().getSpeed());
 

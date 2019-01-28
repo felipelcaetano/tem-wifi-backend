@@ -8,7 +8,7 @@ import java.util.Optional;
 public interface RatingEntity {
 
     /**
-     * Create e new rating for a location
+     * Create a new rating for a location
      *
      * @param rating
      */
@@ -37,4 +37,11 @@ public interface RatingEntity {
      * @return                  a list of ratings dto
      */
     List<RatingDTO> readRatingsByUserId(String userId);
+
+    /**
+     * Update an existing rating with new data
+     *
+     * @param rating
+     */
+    void updateRating(RatingDTO rating);
 }

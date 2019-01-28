@@ -1,10 +1,7 @@
 package br.com.temwifi.domains.rating.component;
 
 import br.com.temwifi.domains.rating.module.RatingModule;
-import br.com.temwifi.domains.rating.service.CreateRatingOrchestration;
-import br.com.temwifi.domains.rating.service.CreateRatingService;
-import br.com.temwifi.domains.rating.service.ReadRatingService;
-import br.com.temwifi.domains.rating.service.ReadRatingsService;
+import br.com.temwifi.domains.rating.service.*;
 import dagger.Component;
 
 import javax.inject.Singleton;
@@ -20,4 +17,8 @@ public interface RatingComponent {
     ReadRatingsService buildReadRatingsService();
 
     CreateRatingOrchestration buildCreateRatingOrchestration();
+
+    UpdateRatingService buildUpdateRatingService();
+
+    UpdateRatingOrchestration buildUpdateRatingOrchestration();
 }

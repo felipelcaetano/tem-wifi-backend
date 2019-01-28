@@ -8,6 +8,7 @@ import br.com.temwifi.domains.locations.controller.PostLocation;
 import br.com.temwifi.domains.rating.controller.GetRating;
 import br.com.temwifi.domains.rating.controller.GetRatings;
 import br.com.temwifi.domains.rating.controller.PostRating;
+import br.com.temwifi.domains.rating.controller.PutRating;
 
 import java.util.Arrays;
 
@@ -20,7 +21,8 @@ public enum APIHandlersEnum {
     LOCATION_POST("/location", "POST", PostLocation.class),
     RATING_GET("/rating", "GET", GetRatings.class),
     RATING_GET_ID("/rating/{ratingId}", "GET", GetRating.class),
-    RATING_POST("/rating", "POST", PostRating.class);
+    RATING_POST("/rating", "POST", PostRating.class),
+    RATING_PUT_ID("/rating/{ratingId}", "PUt", PutRating.class);
 
     private String resource;
     private String httpMethod;

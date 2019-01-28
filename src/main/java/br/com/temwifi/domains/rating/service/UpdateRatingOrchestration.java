@@ -1,21 +1,13 @@
 package br.com.temwifi.domains.rating.service;
 
-import br.com.temwifi.domains.auth.component.DaggerAuthComponent;
-import br.com.temwifi.domains.auth.model.request.GetUserRequest;
-import br.com.temwifi.domains.auth.service.ReadUserService;
-import br.com.temwifi.domains.infra.model.response.Hypermedia;
 import br.com.temwifi.domains.infra.utils.exception.BadRequestException;
 import br.com.temwifi.domains.infra.utils.exception.HttpException;
-import br.com.temwifi.domains.locations.component.DaggerLocationComponent;
-import br.com.temwifi.domains.locations.model.request.GetLocationRequest;
-import br.com.temwifi.domains.locations.model.request.PostLocationRatingRequest;
-import br.com.temwifi.domains.locations.service.CreateLocationRatingService;
-import br.com.temwifi.domains.locations.service.ReadLocationService;
 import br.com.temwifi.domains.rating.component.DaggerRatingComponent;
 import br.com.temwifi.domains.rating.model.dto.RatingDTO;
-import br.com.temwifi.domains.rating.model.request.PostInternetRatingRequest;
-import br.com.temwifi.domains.rating.model.request.PostRatingRequest;
-import br.com.temwifi.domains.rating.model.response.PostRatingResponse;
+import br.com.temwifi.domains.rating.model.request.GetRatingRequest;
+import br.com.temwifi.domains.rating.model.request.PutInternetRatingRequest;
+import br.com.temwifi.domains.rating.model.request.PutRatingRequest;
+import br.com.temwifi.domains.rating.model.response.PutRatingResponse;
 import br.com.temwifi.interfaces.Service;
 import br.com.temwifi.utils.MapperUtils;
 import org.apache.http.HttpStatus;
@@ -23,24 +15,19 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.inject.Inject;
-import java.util.Arrays;
 import java.util.Objects;
 
-public class CreateRatingOrchestration implements Service<PostRatingRequest, PostRatingResponse> {
+public class UpdateRatingOrchestration implements Service<PutRatingRequest, PutRatingResponse> {
 
-    private static final Logger LOGGER = LogManager.getLogger(CreateRatingOrchestration.class);
+    private static final Logger LOGGER = LogManager.getLogger(UpdateRatingOrchestration.class);
 
-    private ReadLocationService readLocationService;
-    private ReadUserService readUserService;
-    private CreateRatingService createLocationService;
-    private CreateLocationRatingService createLocationRatingService;
+    private ReadRatingService readRatingService;
+    private UpdateRatingService updateRatingService;
 
     @Inject
-    CreateRatingOrchestration() {
-        this.readLocationService = DaggerLocationComponent.create().buildReadLocationService();
-        this.readUserService = DaggerAuthComponent.create().buildReadUserService();
-        this.createLocationService = DaggerRatingComponent.create().buildCreateRatingService();
-        this.createLocationRatingService = DaggerLocationComponent.create().buildCreateLocationRatingService();
+    UpdateRatingOrchestration() {
+        this.readRatingService = DaggerRatingComponent.create().buildReadRatingService();
+        this.updateRatingService = DaggerRatingComponent.create().buildUpdateRatingService();
     }
 
     /**
@@ -51,45 +38,26 @@ public class CreateRatingOrchestration implements Service<PostRatingRequest, Pos
      * @throws Exception
      */
     @Override
-    public PostRatingResponse execute(PostRatingRequest request) throws HttpException {
+    public PutRatingResponse execute(PutRatingRequest request) throws HttpException {
 
         LOGGER.info(String.format("%s executing", this.getClass().getSimpleName()));
         LOGGER.info(String.format("Request: %s", MapperUtils.toJson(request)));
 
         validateRequest(request);
 
-        GetLocationRequest getLocationRequest = new GetLocationRequest();
-        getLocationRequest.setId(request.getLocationId());
+        GetRatingRequest getRatingRequest = new GetRatingRequest();
+        getRatingRequest.setId(request.getId());
+        LOGGER.info(String.format("Pesquisando avaliação pelo id: %s", request.getId()));
+        readRatingService.execute(getRatingRequest);
 
-        LOGGER.info(String.format("Pesquisando local pelo id: %s", request.getLocationId()));
-        readLocationService.execute(getLocationRequest);
+        LOGGER.info("Atualizando avaliação");
+        RatingDTO rating = updateRatingService.execute(request);
+        LOGGER.info(String.format("Avaliação %s atualizada com sucesso", rating.getId()));
 
-        GetUserRequest getUserRequest = new GetUserRequest();
-        getUserRequest.setId(request.getUserId());
+        PutRatingResponse putRatingResponse = new PutRatingResponse();
+        putRatingResponse.setStatusCode(HttpStatus.SC_NO_CONTENT);
 
-        LOGGER.info(String.format("Pesquisando usuário pelo id: %s", request.getUserId()));
-        readUserService.execute(getUserRequest);
-
-        LOGGER.info("Registrando avaliação");
-        RatingDTO rating = createLocationService.execute(request);
-        LOGGER.info(String.format("Avaliação %s registrada com sucesso", rating.getId()));
-
-        LOGGER.info("Registrando avaliação no local");
-        PostLocationRatingRequest postLocationRatingRequest = new PostLocationRatingRequest();
-        postLocationRatingRequest.setLocationId(request.getLocationId());
-        postLocationRatingRequest.setRatingId(rating.getId());
-        createLocationRatingService.execute(postLocationRatingRequest);
-        LOGGER.info("Avaliação registrada com sucesso para o local");
-
-        Hypermedia hypermedia = new Hypermedia();
-        hypermedia.setRel(rating.getId());
-        hypermedia.setHref("rating/".concat(rating.getId()));
-
-        PostRatingResponse postRatingResponse = new PostRatingResponse();
-        postRatingResponse.setLinks(Arrays.asList(hypermedia));
-        postRatingResponse.setStatusCode(HttpStatus.SC_CREATED);
-
-        return postRatingResponse;
+        return putRatingResponse;
     }
 
     /**
@@ -98,7 +66,7 @@ public class CreateRatingOrchestration implements Service<PostRatingRequest, Pos
      * @param request
      * @throws BadRequestException
      */
-    private void validateRequest(PostRatingRequest request) throws BadRequestException {
+    private void validateRequest(PutRatingRequest request) throws BadRequestException {
 
         StringBuilder sb = new StringBuilder();
         LOGGER.info(String.format("Validando request: \n%s", MapperUtils.toJson(request)));
@@ -108,16 +76,10 @@ public class CreateRatingOrchestration implements Service<PostRatingRequest, Pos
             throw new BadRequestException(sb.toString());
         }
 
-        LOGGER.info(String.format("Validando locationId %s", request.getLocationId()));
-        if (Objects.isNull(request.getLocationId())) {
-            LOGGER.error("Location Id inválido");
-            sb.append("Location Id inválido. É obrigatório, ");
-        }
-
-        LOGGER.info(String.format("Validando userId %s", request.getUserId()));
-        if (Objects.isNull(request.getUserId())) {
-            LOGGER.error("User Id inválido");
-            sb.append("User Id inválido. É obrigatório, ");
+        LOGGER.info(String.format("Validando id %s", request.getId()));
+        if (Objects.isNull(request.getId())) {
+            LOGGER.error("Id inválido");
+            sb.append("Id inválido. É obrigatório, ");
         }
 
         LOGGER.info(String.format("Validando comidas %s", request.getFoods()));
@@ -168,7 +130,7 @@ public class CreateRatingOrchestration implements Service<PostRatingRequest, Pos
             sb.append("Internet inválida. É obrigatório");
         } else {
 
-            PostInternetRatingRequest internet = request.getInternet();
+            PutInternetRatingRequest internet = request.getInternet();
 
             LOGGER.info(String.format("Validando se tem internet %s", internet.getHasInternet()));
             if(Objects.isNull(internet.getHasInternet())) {
@@ -190,6 +152,7 @@ public class CreateRatingOrchestration implements Service<PostRatingRequest, Pos
 
             if(Boolean.FALSE.equals(internet.getIsOpened())) {
                 LOGGER.info(String.format("Validando senha da internet %s", internet.getPass()));
+
                 if(Objects.isNull(internet.getPass())) {
                     LOGGER.error("Senha da Internet Internet inválida");
                     sb.append("Senha da Internet inválida. É obrigatório, ");

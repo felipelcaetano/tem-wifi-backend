@@ -1,6 +1,6 @@
-package br.com.temwifi.domains.rating.model.response;
+package br.com.temwifi.domains.rating.model.request;
 
-public class GetInrenetRatingResponse {
+public class PutInternetRatingRequest {
 
     private Boolean hasInternet;
     private Integer speed;

@@ -2,6 +2,7 @@ package br.com.temwifi.domains.locations.model.request;
 
 public class PostLocationRequest {
 
+    private String name;
     private String street;
     private String number;
     private String complement;
@@ -10,6 +11,15 @@ public class PostLocationRequest {
     private String state;
     private String country;
     private String completeAddress;
+    private String nameIndex;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public String getStreet() {
         return street;
@@ -73,5 +83,13 @@ public class PostLocationRequest {
 
     public void setCompleteAddress(String completeAddress) {
         this.completeAddress = completeAddress;
+    }
+
+    public String getNameIndex() {
+        return nameIndex;
+    }
+
+    public void setNameIndex(String nameIndex) {
+        this.nameIndex = nameIndex;
     }
 }

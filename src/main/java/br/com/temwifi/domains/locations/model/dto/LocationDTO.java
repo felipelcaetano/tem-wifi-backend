@@ -13,6 +13,12 @@ public class LocationDTO {
     @DynamoDBIndexHashKey(globalSecondaryIndexName = "completeAddress-index")
     private String completeAddress;
 
+    @DynamoDBIndexHashKey(globalSecondaryIndexName = "name-index")
+    private String nameIndex;
+
+    @DynamoDBAttribute
+    private String name;
+
     @DynamoDBAttribute
     private String street;
 
@@ -58,6 +64,22 @@ public class LocationDTO {
 
     public void setCompleteAddress(String completeAddress) {
         this.completeAddress = completeAddress;
+    }
+
+    public String getNameIndex() {
+        return nameIndex;
+    }
+
+    public void setNameIndex(String nameIndex) {
+        this.nameIndex = nameIndex;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getStreet() {

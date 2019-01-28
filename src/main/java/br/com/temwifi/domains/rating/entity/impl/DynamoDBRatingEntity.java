@@ -50,4 +50,9 @@ public class DynamoDBRatingEntity extends DynamoDBAbstractEntity implements Rati
 
         return mapper.query(RatingDTO.class, expression);
     }
+
+    @Override
+    public void updateRating(RatingDTO rating) {
+        super.save(rating);
+    }
 }

@@ -52,13 +52,13 @@ public class CreateLocationOrchestration implements Service<PostLocationRequest,
         validateRequest(request);
 
         StringBuilder sb = new StringBuilder();
-        sb.append(FormatUtils.removeAccent(request.getStreet().trim().toUpperCase()));
+        sb.append(FormatUtils.removeAccent(request.getStreet().replaceAll("\\s", "").toUpperCase()));
         sb.append(COMMA);
-        sb.append(FormatUtils.removeAccent(request.getNumber().trim().toUpperCase()));
+        sb.append(FormatUtils.removeAccent(request.getNumber().replaceAll("\\s", "").toUpperCase()));
         sb.append(COMMA);
 
         if(!Objects.isNull(request.getComplement())) {
-            sb.append(FormatUtils.removeAccent(request.getComplement().trim().toUpperCase()));
+            sb.append(FormatUtils.removeAccent(request.getComplement().replaceAll("\\s", "").toUpperCase()));
             sb.append(COMMA);
         }
 
@@ -67,6 +67,7 @@ public class CreateLocationOrchestration implements Service<PostLocationRequest,
         String completeAddress = sb.toString();
 
         request.setCompleteAddress(completeAddress);
+        request.setNameIndex(FormatUtils.removeAccent(request.getName().replaceAll("\\s", "").toUpperCase()));
 
         GetLocationRequest getLocationRequest = new GetLocationRequest();
         getLocationRequest.setCompleteAddress(completeAddress);
@@ -99,8 +100,15 @@ public class CreateLocationOrchestration implements Service<PostLocationRequest,
      */
     private void validateRequest(PostLocationRequest request) throws BadRequestException {
 
-        LOGGER.info("Validando logradouro");
         StringBuilder sb = new StringBuilder();
+
+        LOGGER.info("Validando nome");
+        if(Objects.isNull(request.getName())) {
+            LOGGER.warn("Nome inválido");
+            sb.append("Nome inválido. É obrigatório | ");
+        }
+
+        LOGGER.info("Validando logradouro");
         if(Objects.isNull(request.getStreet())) {
             LOGGER.warn("Logradouro inválido");
             sb.append("Logradouro inválido. É obrigatório | ");
