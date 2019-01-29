@@ -7,13 +7,15 @@ import javax.xml.bind.DatatypeConverter;
 
 public class TokenUtils {
 
+    private static final String JWT_SECRET = "JWT_SECRET";
+
     /**
      * Generate a base64 secret hash
      *
      * @return  a base64 hash
      */
     public static byte[] getSecret() {
-        return DatatypeConverter.parseBase64Binary("5f0181cd-fddf-4350-820e-92d080faa5c6");
+        return DatatypeConverter.parseBase64Binary(System.getenv(JWT_SECRET));
     }
 
     /**
