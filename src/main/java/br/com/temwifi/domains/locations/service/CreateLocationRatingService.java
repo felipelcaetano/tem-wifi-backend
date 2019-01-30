@@ -49,7 +49,7 @@ public class CreateLocationRatingService implements Service<PostLocationRatingRe
 
         LocationDTO locationDTO = location.get();
 
-        if(locationDTO.getRatings().isEmpty()) {
+        if(Objects.isNull(locationDTO.getRatings())) {
             locationDTO.setRatings(new HashSet());
         }
 

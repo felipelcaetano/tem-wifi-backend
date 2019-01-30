@@ -120,18 +120,6 @@ public class CreateRatingOrchestration implements Service<PostRatingRequest, Pos
             sb.append("User Id inválido. É obrigatório, ");
         }
 
-        LOGGER.info(String.format("Validando comidas %s", request.getFoods()));
-        if (Objects.isNull(request.getFoods())) {
-            LOGGER.error("Comidas inválidas");
-            sb.append("Comidas inválidas. É obrigatório, ");
-        }
-
-        LOGGER.info(String.format("Validando bebidas %s", request.getDrinks()));
-        if (Objects.isNull(request.getDrinks())) {
-            LOGGER.error("Bebidas inválidas");
-            sb.append("Bebidas inválidas. É obrigatório, ");
-        }
-
         LOGGER.info(String.format("Validando atendimento %s", request.getTreatment()));
         if (Objects.isNull(request.getTreatment())) {
             LOGGER.error("Atendimento inválido");
@@ -180,12 +168,6 @@ public class CreateRatingOrchestration implements Service<PostRatingRequest, Pos
             if(Objects.isNull(internet.getIsOpened())) {
                 LOGGER.error("Internet Aberta inválida");
                 sb.append("Internet Aberta inválida. É obrigatório, ");
-            }
-
-            LOGGER.info(String.format("Validando velocidade da internet %s", internet.getSpeed()));
-            if(Objects.isNull(internet.getSpeed())) {
-                LOGGER.error("Velocidade da Internet Internet inválida");
-                sb.append("Velocidade da Internet inválida. É obrigatório, ");
             }
 
             if(Boolean.FALSE.equals(internet.getIsOpened())) {

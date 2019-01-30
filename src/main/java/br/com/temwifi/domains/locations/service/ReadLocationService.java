@@ -56,10 +56,12 @@ public class ReadLocationService implements Service<GetLocationRequest, Location
                 location = locationEntity.readLocationByCompleteAddress(request.getCompleteAddress());
             }
 
+            /*
             if(!location.isPresent() && !Objects.isNull(request.getName())) {
                 LOGGER.info(String.format("Pesquisando local por nome [%s]", request.getName()));
-                location = locationEntity.readLocationByCompleteAddress(request.getCompleteAddress());
+                location = locationEntity.readLocationByName(request.getCompleteAddress());
             }
+            */
         }
 
         if(!location.isPresent()) {

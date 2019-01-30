@@ -1,6 +1,7 @@
 package br.com.temwifi.domains.auth.service;
 
 import br.com.temwifi.domains.auth.entity.interfaces.UserEntity;
+import br.com.temwifi.domains.auth.enums.AuthProviderEnum;
 import br.com.temwifi.domains.auth.model.dto.UserDTO;
 import br.com.temwifi.domains.auth.model.request.PostLoginRequest;
 import br.com.temwifi.domains.auth.model.response.PostLoginResponse;
@@ -12,6 +13,7 @@ import br.com.temwifi.interfaces.Service;
 import br.com.temwifi.utils.MapperUtils;
 import br.com.temwifi.utils.auth.PasswordUtils;
 import br.com.temwifi.utils.auth.TokenUtils;
+import br.com.temwifi.utils.date.LocalDateTimeUtils;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
@@ -23,6 +25,7 @@ import java.sql.Date;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
+import java.util.UUID;
 
 public class LoginService implements Service<PostLoginRequest, PostLoginResponse> {
 
@@ -50,14 +53,24 @@ public class LoginService implements Service<PostLoginRequest, PostLoginResponse
 
         Optional<UserDTO> user = userEntity.readUserByEmail(request.getUser());
 
-        if(!user.isPresent()) {
-            LOGGER.error(String.format("Usuário [%s] não encontrada", request.getUser()));
-            throw new ResourceNotFoundException(String.format("Usuário [%s] não encontrado", request.getUser()));
-        }
+        if(AuthProviderEnum.TEMWIFI.toString().equalsIgnoreCase(request.getProvider())) {
 
-        if(!PasswordUtils.verifyUserPassword(request.getPass(), user.get().getPass(), user.get().getSalt())) {
-            LOGGER.error("Usuário ou senha inválidos");
-            throw new BadRequestException("Usuário ou senha inválidos");
+            if(!user.isPresent()) {
+                LOGGER.error(String.format("Usuário [%s] não encontrada", request.getUser()));
+                throw new ResourceNotFoundException(String.format("Usuário [%s] não encontrado", request.getUser()));
+            }
+
+            if(!PasswordUtils.verifyUserPassword(request.getPass(), user.get().getPass(), user.get().getSalt())) {
+                LOGGER.error("Usuário ou senha inválidos");
+                throw new BadRequestException("Usuário ou senha inválidos");
+            }
+        } else if(!user.isPresent()){
+
+            UserDTO userDTO = new UserDTO();
+            userDTO.setInsertDateTime(LocalDateTimeUtils.now());
+            userDTO.setEmail(request.getUser());
+            userDTO.setId(UUID.randomUUID().toString());
+            userEntity.createUser(userDTO);
         }
 
         String token;

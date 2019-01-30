@@ -40,7 +40,14 @@ public class ReadUserService implements Service<GetUserRequest, UserDTO> {
 
         validate(request);
 
-        Optional<UserDTO> user = userEntity.readUserByEmail(request.getEmail());
+        Optional<UserDTO> user = Optional.empty();
+        if(!Objects.isNull(request.getId())) {
+            user = userEntity.readUserById(request.getId());
+        }
+
+        if(!Objects.isNull(request.getEmail())) {
+            user = userEntity.readUserByEmail(request.getEmail());
+        }
 
         if(!user.isPresent()) {
             throw new ResourceNotFoundException(String.format("Usuário [%s] não encontrado", request.getEmail()));

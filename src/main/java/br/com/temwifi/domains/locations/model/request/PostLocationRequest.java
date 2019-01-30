@@ -1,5 +1,8 @@
 package br.com.temwifi.domains.locations.model.request;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PostLocationRequest {
 
     private String name;

@@ -4,6 +4,7 @@ public class PostLoginRequest {
 
     private String user;
     private String pass;
+    private String provider;
 
     public String getUser() {
         return user;
@@ -19,5 +20,13 @@ public class PostLoginRequest {
 
     public void setPass(String pass) {
         this.pass = pass;
+    }
+
+    public String getProvider() {
+        return provider;
+    }
+
+    public void setProvider(String provider) {
+        this.provider = provider;
     }
 }

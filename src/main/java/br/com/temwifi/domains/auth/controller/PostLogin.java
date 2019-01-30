@@ -2,7 +2,7 @@ package br.com.temwifi.domains.auth.controller;
 
 import br.com.temwifi.annotations.Controller;
 import br.com.temwifi.domains.auth.component.DaggerAuthComponent;
-import br.com.temwifi.domains.auth.entity.impl.DynamoDBUserEntity;
+import br.com.temwifi.domains.auth.enums.AuthProviderEnum;
 import br.com.temwifi.domains.auth.model.request.PostLoginRequest;
 import br.com.temwifi.domains.auth.model.response.PostLoginResponse;
 import br.com.temwifi.domains.auth.service.LoginService;
@@ -38,13 +38,16 @@ public class PostLogin implements AwsApiRestHandler<PostLoginRequest, PostLoginR
     @Override
     public PostLoginResponse handleRequest(PostLoginRequest body, AwsHttpContext httpContext) throws HttpException {
 
-        if(Objects.isNull(body) || Objects.isNull(body.getUser()) || Objects.isNull(body.getPass())) {
+        if(Objects.isNull(body) || Objects.isNull(body.getUser()) || Objects.isNull(body.getProvider())) {
             LOGGER.error(String.format("Requisição inválida | %s", MapperUtils.toJson(body)));
-            throw new BadRequestException("Email e/ou senha não informados");
+            throw new BadRequestException("Email e/ou Provider não informados");
         }
 
-        DynamoDBUserEntity dynamoDBUserEntity = new DynamoDBUserEntity();
-        service = new LoginService(dynamoDBUserEntity);
+        if(AuthProviderEnum.TEMWIFI.toString().equalsIgnoreCase(body.getProvider()) && Objects.isNull(body.getPass())) {
+            LOGGER.error(String.format("Requisição inválida | %s", MapperUtils.toJson(body)));
+            throw new BadRequestException("Senha não informada");
+        }
+
         return service.execute(body);
     }
 }

@@ -58,11 +58,11 @@ public class CreateLocationOrchestration implements Service<PostLocationRequest,
         sb.append(COMMA);
 
         if(!Objects.isNull(request.getComplement())) {
-            sb.append(FormatUtils.removeAccent(request.getComplement().replaceAll("\\s", "").toUpperCase()));
+            sb.append(FormatUtils.removeAccent(request.getComplement().replaceAll("[\\sa-zA-Z]", "").toUpperCase()));
             sb.append(COMMA);
         }
 
-        sb.append(FormatUtils.removeAccent(request.getCity().trim().toUpperCase()));
+        sb.append(FormatUtils.removeAccent(request.getCity().replaceAll("\\s", "").toUpperCase()));
 
         String completeAddress = sb.toString();
 
@@ -74,13 +74,18 @@ public class CreateLocationOrchestration implements Service<PostLocationRequest,
         getLocationRequest.setName(request.getNameIndex());
 
         LOGGER.info(String.format("Pesquisando endereço: %s", completeAddress));
+        LocationDTO location = null;
         try {
-            readLocationService.execute(getLocationRequest);
+            location = readLocationService.execute(getLocationRequest);
         } catch (ResourceNotFoundException e) {
             LOGGER.info("Endereço não encontrado");
         }
 
-        LocationDTO location = createLocationService.execute(request);
+        if(Objects.isNull(location)) {
+            LOGGER.info(String.format("Registrando endereço: \n%s", MapperUtils.toJson(location)));
+            location = createLocationService.execute(request);
+            LOGGER.info("Endereço registrado com sucesso.");
+        }
 
         Hypermedia hypermedia = new Hypermedia();
         hypermedia.setRel(location.getId());
