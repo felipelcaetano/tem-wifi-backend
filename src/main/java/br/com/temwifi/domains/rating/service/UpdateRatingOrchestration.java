@@ -82,18 +82,6 @@ public class UpdateRatingOrchestration implements Service<PutRatingRequest, PutR
             sb.append("Id inválido. É obrigatório, ");
         }
 
-        LOGGER.info(String.format("Validando comidas %s", request.getFoods()));
-        if (Objects.isNull(request.getFoods())) {
-            LOGGER.error("Comidas inválidas");
-            sb.append("Comidas inválidas. É obrigatório, ");
-        }
-
-        LOGGER.info(String.format("Validando bebidas %s", request.getDrinks()));
-        if (Objects.isNull(request.getDrinks())) {
-            LOGGER.error("Bebidas inválidas");
-            sb.append("Bebidas inválidas. É obrigatório, ");
-        }
-
         LOGGER.info(String.format("Validando atendimento %s", request.getTreatment()));
         if (Objects.isNull(request.getTreatment())) {
             LOGGER.error("Atendimento inválido");
