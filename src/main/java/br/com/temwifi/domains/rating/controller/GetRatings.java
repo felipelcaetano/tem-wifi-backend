@@ -3,6 +3,7 @@ package br.com.temwifi.domains.rating.controller;
 import br.com.temwifi.annotations.Controller;
 import br.com.temwifi.domains.infra.controller.AwsApiRestHandler;
 import br.com.temwifi.domains.infra.model.request.AwsHttpContext;
+import br.com.temwifi.domains.infra.model.response.Hypermedia;
 import br.com.temwifi.domains.infra.utils.exception.BadRequestException;
 import br.com.temwifi.domains.infra.utils.exception.HttpException;
 import br.com.temwifi.domains.rating.component.DaggerRatingComponent;
@@ -15,6 +16,7 @@ import br.com.temwifi.domains.rating.service.ReadRatingsService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -68,6 +70,7 @@ public class GetRatings implements AwsApiRestHandler<Void, GetRatingsResponse> {
         List<RatingDTO> ratings = readRatingsService.execute(getRatingsRequest);
 
         GetRatingsResponse getRatingsResponse = new GetRatingsResponse();
+        getRatingsResponse.setLinks(new ArrayList<>());
 
         List<GetRatingResponse> returnRatings = ratings
                 .stream()
@@ -99,6 +102,18 @@ public class GetRatings implements AwsApiRestHandler<Void, GetRatingsResponse> {
                 .collect(Collectors.toList());
 
         getRatingsResponse.setRatings(returnRatings);
+
+        List<Hypermedia> hypermedias = ratings.stream()
+                .map(rating -> {
+                    Hypermedia hypermedia = new Hypermedia();
+                    hypermedia.setRel(rating.getId());
+                    hypermedia.setHref("rating/".concat(rating.getId()));
+
+                    return hypermedia;
+                })
+                .collect(Collectors.toList());
+
+        getRatingsResponse.setLinks(hypermedias);
 
         return getRatingsResponse;
     }
