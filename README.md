@@ -95,6 +95,11 @@ pela AWS, responsável por todo armazenamento de dados da aplicação
 
 Esse projeto está sob a licença MIT License
 
+## Problemas conhecidos
+
+* Login via Facebook loga automaticamente 1x ao deslogar
+* Login via Google não está funcionando
+
 ## Lista de Endpoints disponíveis para teste
 
 Url base: https://33arogiloa.execute-api.us-east-1.amazonaws.com/dev
