@@ -38,6 +38,7 @@ public class CreateLocationService implements Service<PostLocationRequest, Locat
         LocationDTO locationDTO = new LocationDTO();
         locationDTO.setId(UUID.randomUUID().toString());
         locationDTO.setCompleteAddress(request.getCompleteAddress());
+        locationDTO.setType(request.getType().substring(0, 1).toUpperCase().concat(request.getType().substring(1).toLowerCase()));
         locationDTO.setName(request.getName());
         locationDTO.setNameIndex(request.getNameIndex());
         locationDTO.setStreet(request.getStreet());

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PostLocationRequest {
 
+    private String type;
     private String name;
     private String street;
     private String number;
@@ -15,6 +16,14 @@ public class PostLocationRequest {
     private String country;
     private String completeAddress;
     private String nameIndex;
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 
     public String getName() {
         return name;

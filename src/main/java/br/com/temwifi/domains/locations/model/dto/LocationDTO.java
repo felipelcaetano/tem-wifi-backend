@@ -17,6 +17,9 @@ public class LocationDTO {
     private String nameIndex;
 
     @DynamoDBAttribute
+    private String type;
+
+    @DynamoDBAttribute
     private String name;
 
     @DynamoDBAttribute
@@ -72,6 +75,14 @@ public class LocationDTO {
 
     public void setNameIndex(String nameIndex) {
         this.nameIndex = nameIndex;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public String getName() {

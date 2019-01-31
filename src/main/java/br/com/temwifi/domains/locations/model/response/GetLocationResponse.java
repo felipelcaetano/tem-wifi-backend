@@ -7,6 +7,7 @@ import java.util.Set;
 public class GetLocationResponse extends RestAbstractResponse {
 
     private String id;
+    private String type;
     private String name;
     private String street;
     private String number;
@@ -24,6 +25,14 @@ public class GetLocationResponse extends RestAbstractResponse {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public String getName() {

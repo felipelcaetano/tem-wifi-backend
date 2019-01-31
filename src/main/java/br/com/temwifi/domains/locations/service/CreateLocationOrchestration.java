@@ -5,6 +5,7 @@ import br.com.temwifi.domains.infra.utils.exception.BadRequestException;
 import br.com.temwifi.domains.infra.utils.exception.HttpException;
 import br.com.temwifi.domains.infra.utils.exception.ResourceNotFoundException;
 import br.com.temwifi.domains.locations.component.DaggerLocationComponent;
+import br.com.temwifi.domains.locations.enums.LocationTypeEnum;
 import br.com.temwifi.domains.locations.model.dto.LocationDTO;
 import br.com.temwifi.domains.locations.model.request.GetLocationRequest;
 import br.com.temwifi.domains.locations.model.request.PostLocationRequest;
@@ -107,6 +108,21 @@ public class CreateLocationOrchestration implements Service<PostLocationRequest,
     private void validateRequest(PostLocationRequest request) throws BadRequestException {
 
         StringBuilder sb = new StringBuilder();
+        LOGGER.info("Validando tipo");
+        if(Objects.isNull(request.getType())) {
+            LOGGER.warn("Tipo inválido");
+            sb.append("Tipo inválido. É obrigatório | ");
+        }
+
+        try {
+            LocationTypeEnum locationTypeEnum = LocationTypeEnum.valueOf(request.getType().toUpperCase().trim());
+            if(locationTypeEnum.CAFE.equals(locationTypeEnum)) {
+                request.setType("Café");
+            }
+        } catch (IllegalArgumentException e) {
+            LOGGER.warn("Tipo inválido");
+            sb.append("Tipo inválido | ");
+        }
 
         LOGGER.info("Validando nome");
         if(Objects.isNull(request.getName())) {
